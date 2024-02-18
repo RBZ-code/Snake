@@ -57,7 +57,7 @@ const startGame = () => {
             if (i === 0) {
                 ctx.drawImage(shenronImg, snake[i].x, snake[i].y, box, box);
             } else {
-                ctx.fillStyle = "#8FBF59";
+                ctx.fillStyle = "#24EE02";
                 ctx.fillRect(snake[i].x, snake[i].y, box, box);
             }
             ctx.strokeStyle = "white";
@@ -202,7 +202,6 @@ const startGame = () => {
         }
         walls.push({ x: wallX, y: wallY });
     };
-
 
     game = setInterval(draw, 100);
 
