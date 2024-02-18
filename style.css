@@ -1,13 +1,101 @@
-body{
+:root {
+    --bg: #1a1e24;
+    --color: #eee;
+    --font: Montserrat, Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
     height: 90vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #8fbf59; /* Couleur de fond verte rétro */
 }
+
+.container {
+    position: relative;
+}
+
+.wrapper {
+    padding: 1.5rem 0;
+    filter: url('#goo');
+    text-align: center;
+}
+
+.button {
+    display: inline-block;
+    text-align: center;
+    background: var(--color);
+    color: var(--bg);
+    font-weight: bold;
+    padding: 1.18em 1.32em 1.03em;
+    line-height: 1;
+    border-radius: 1em;
+    position: relative;
+    min-width: 8.23em;
+    text-decoration: none;
+    font-family: var(--font);
+    font-size: 1.25rem;
+    transition: background-color 2s, color 2s; /* Ajout de la transition */
+
+}
+
+.button:before,
+.button:after {
+    width: 4.4em;
+    height: 2.95em;
+    position: absolute;
+    content: "";
+    display: inline-block;
+    background: var(--color);
+    border-radius: 50%;
+    transition: transform 2s ease, background-color 2s; /* Ajustement de la transition */
+    transform: scale(0);
+    z-index: -1;
+}
+
+.button:before {
+    top: -25%;
+    left: 20%;
+}
+
+.button:after {
+    bottom: -25%;
+    right: 20%;
+}
+
+.button:hover {
+    background-color: black; /* Changement de la couleur au survol */
+    color: white; /* Changement de la couleur du texte au survol */
+}
+
+.button:hover:before,
+.button:hover:after {
+    transform: none;
+    background-color: black;
+}
+
 
 
 
 canvas {
-    border: 2px solid black;
+    border: 4px solid #8b4513; 
+    background-color: #c0c0c0; 
 }
 
+
+#shenron,
+#dragonBall {
+    position: absolute;
+}
+
+#shenron {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#dragonBall {
+    /* Placez les boules de cristal aléatoirement sur le canvas dans le script JavaScript */
+    display: none; /* Nous allons les afficher dynamiquement dans le script JavaScript */
+}

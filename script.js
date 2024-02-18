@@ -1,14 +1,34 @@
-// Chargez votre image
-let snakeHeadImg = new Image();
-snakeHeadImg.src = 'images/snake.png'; // Remplacez 'chemin/vers/votre/image.png' par le chemin de votre image
+let box; // Déclaration de la variable box en dehors de la fonction onload
+let game; // Déclaration de la variable game en dehors de la fonction onload
 
-// Assurez-vous que l'image est chargée avant de commencer à dessiner
-snakeHeadImg.onload = () => {
-    // Continuez avec le reste du code ici, à l'intérieur de la fonction onload
-    const canvas = document.querySelector("canvas");
+// Chargement des images
+let shenronImg = new Image();
+shenronImg.src = "images/teteDragon.jpg";
+
+let dragonBallImg = new Image();
+dragonBallImg.src = "images/ball4.png";
+
+// Fonction pour vérifier si toutes les images sont chargées
+let imagesLoaded = 0;
+const totalImages = 2; // Nombre total d'images à charger
+
+const checkImagesLoaded = () => {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+        // Toutes les images sont chargées, démarrer le jeu
+        startGame();
+    }
+};
+
+shenronImg.onload = checkImagesLoaded;
+dragonBallImg.onload = checkImagesLoaded;
+
+// Fonction pour démarrer le jeu
+const startGame = () => {
+    const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    let box = 25;
+    box = 25; // Assignation de la valeur de box
 
     let walls = [];
     let snake = [];
@@ -23,7 +43,6 @@ snakeHeadImg.onload = () => {
 
     let direction;
 
-    // Variable pour suivre si un mur a déjà été ajouté après le dernier multiple de 5
     let wallAdded = false;
 
     let update = (event) => {
@@ -43,49 +62,28 @@ snakeHeadImg.onload = () => {
 
     let draw = () => {
         ctx.clearRect(0, 0, 500, 500);
-    
-        // Ajouter un mur après chaque multiple de 10 seulement si aucun mur n'a été ajouté
-        if (score > 0 && score % 10 === 0 && !wallAdded) {
-            generateWall();
-            wallAdded = true; // Marquer qu'un mur a été ajouté
-        }
-    
-        // Réinitialiser wallAdded lorsque le score n'est pas un multiple de 5
-        if (score % 5 !== 0) {
-            wallAdded = false;
-        }
-    
-        // Dessiner les murs
+
         for (let i = 0; i < walls.length; i++) {
             ctx.fillStyle = "black";
             ctx.fillRect(walls[i].x, walls[i].y, box, box);
         }
-    
-        // Dessiner le serpent
+
         for (let i = 0; i < snake.length; i++) {
             if (i === 0) {
-                // Dessiner la tête du serpent en utilisant l'image chargée
-                ctx.drawImage(snakeHeadImg, snake[i].x, snake[i].y, box, box);
+                ctx.drawImage(shenronImg, snake[i].x, snake[i].y, box, box);
             } else {
-                ctx.fillStyle = "blue";
+                ctx.fillStyle = "#8FBF59";
                 ctx.fillRect(snake[i].x, snake[i].y, box, box);
             }
             ctx.strokeStyle = "white";
             ctx.strokeRect(snake[i].x, snake[i].y, box, box);
         }
-    
-        // Dessiner la nourriture
-        ctx.fillStyle = "red";
-        ctx.beginPath();
-        ctx.arc(food.x + box / 2, food.y + box / 2, box / 2, 0, Math.PI * 2);
-        ctx.fillStyle = "red";
-        ctx.fill();
-        ctx.closePath();
-    
-        // Déplacer le serpent
+
+        ctx.drawImage(dragonBallImg, food.x, food.y, box, box);
+
         let snakeX = snake[0].x;
         let snakeY = snake[0].y;
-    
+
         if (direction === "right") {
             snakeX += box;
         } else if (direction === "left") {
@@ -95,22 +93,19 @@ snakeHeadImg.onload = () => {
         } else if (direction === "down") {
             snakeY += box;
         }
-    
-        // Vérifier si le serpent a mangé la nourriture
+
         if (snakeX === food.x && snakeY === food.y) {
             score++;
-            generateFood(); // Générer une nouvelle nourriture
+            generateFood();
         } else {
             snake.pop();
         }
-    
-        // Créer une nouvelle tête pour le serpent
+
         let newHead = {
             x: snakeX,
             y: snakeY,
         };
-    
-        // Vérifier les collisions avec les murs ou le serpent lui-même
+
         if (
             snakeX < 0 ||
             snakeX >= 20 * box ||
@@ -121,22 +116,21 @@ snakeHeadImg.onload = () => {
         ) {
             clearInterval(game);
         }
-    
-        // Ajouter la nouvelle tête au serpent
+
         snake.unshift(newHead);
-    
-        // Afficher le score
+
         ctx.fillStyle = "gold";
         ctx.font = "25px Arial";
         ctx.fillText(score, 1 * box, 2 * box);
-    
-        // Ajouter un mur si nécessaire
-        if (score > 0 && score % 10 === 0 && !wallAdded) {
+
+        if (score > 0 && score % 5 === 0 && !wallAdded) {
             generateWall();
-            wallAdded = true; // Marquer qu'un mur a été ajouté
+            wallAdded = true;
+        }
+        if (score % 5 !== 0) {
+            wallAdded = false;
         }
     };
-    
 
     let collision = (head, array) => {
         for (let g = 0; g < array.length; g++) {
@@ -159,46 +153,73 @@ snakeHeadImg.onload = () => {
     let generateFood = () => {
         let foodX, foodY;
         let isFoodOnSnake = true;
-    
+
         while (isFoodOnSnake) {
             foodX = Math.floor(Math.random() * 15 + 1) * box;
             foodY = Math.floor(Math.random() * 15 + 1) * box;
-    
+
             isFoodOnSnake = false;
-            // Vérifier si la nourriture est sur une partie du corps du serpent
             for (let i = 0; i < snake.length; i++) {
                 if (foodX === snake[i].x && foodY === snake[i].y) {
                     isFoodOnSnake = true;
                     break;
                 }
             }
+            for (let i = 0; i < walls.length; i++) {
+                if (foodX === walls[i].x && foodY === walls[i].y) {
+                    isFoodOnSnake = true;
+                    break;
+                }
+            }
+            if (foodX === snake[0].x && foodY === snake[0].y) {
+                isFoodOnSnake = true;
+            }
         }
-    
-        food = { x: foodX, y: foodY };
+
+        // Sélectionnez aléatoirement un nombre entre 1 et 7 pour choisir l'image de la nourriture
+        let foodNumber = Math.floor(Math.random() * 7) + 1;
+        let foodImg = new Image();
+        foodImg.src = `images/ball${foodNumber}.png`;
+
+        // Assignez l'image de la nourriture à l'objet food
+        food = { x: foodX, y: foodY, img: foodImg };
     };
-
-   
-
     let generateWall = () => {
         let wallX, wallY;
         let isWallOnSnake = true;
-    
+
         while (isWallOnSnake) {
             wallX = Math.floor(Math.random() * 15 + 1) * box;
             wallY = Math.floor(Math.random() * 15 + 1) * box;
-    
+
             isWallOnSnake = false;
-            // Vérifier si le mur est sur une partie du corps du serpent
             for (let i = 0; i < snake.length; i++) {
                 if (wallX === snake[i].x && wallY === snake[i].y) {
                     isWallOnSnake = true;
                     break;
                 }
             }
+            if (wallX === food.x && wallY === food.y) {
+                isWallOnSnake = true;
+            }
         }
-    
         walls.push({ x: wallX, y: wallY });
     };
 
-    let game = setInterval(draw, 100);
+    game = setInterval(draw, 100);
+
+    function rejouer() {
+        snake = [{ x: 10 * box, y: 10 * box }];
+        food = {
+            x: Math.floor(Math.random() * 15 + 1) * box,
+            y: Math.floor(Math.random() * 15 + 1) * box,
+        };
+        score = 0;
+        direction = undefined;
+        walls = [];
+        clearInterval(game);
+        game = setInterval(draw, 100);
+    }
+
+    document.getElementById("rejouer").addEventListener("click", rejouer);
 };
