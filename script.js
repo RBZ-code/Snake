@@ -1,34 +1,19 @@
-let box; // Déclaration de la variable box en dehors de la fonction onload
-let game; // Déclaration de la variable game en dehors de la fonction onload
+let box;
+let game;
 
-// Chargement des images
+let bonus = [];
+
 let shenronImg = new Image();
 shenronImg.src = "images/teteDragon.jpg";
 
 let dragonBallImg = new Image();
 dragonBallImg.src = "images/ball4.png";
 
-// Fonction pour vérifier si toutes les images sont chargées
-let imagesLoaded = 0;
-const totalImages = 2; // Nombre total d'images à charger
-
-const checkImagesLoaded = () => {
-    imagesLoaded++;
-    if (imagesLoaded === totalImages) {
-        // Toutes les images sont chargées, démarrer le jeu
-        startGame();
-    }
-};
-
-shenronImg.onload = checkImagesLoaded;
-dragonBallImg.onload = checkImagesLoaded;
-
-// Fonction pour démarrer le jeu
 const startGame = () => {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
 
-    box = 25; // Assignation de la valeur de box
+    box = 25;
 
     let walls = [];
     let snake = [];
@@ -176,13 +161,25 @@ const startGame = () => {
             }
         }
 
-        // Sélectionnez aléatoirement un nombre entre 1 et 7 pour choisir l'image de la nourriture
         let foodNumber = Math.floor(Math.random() * 7) + 1;
-        let foodImg = new Image();
-        foodImg.src = `images/ball${foodNumber}.png`;
+        dragonBallImg.src = `images/ball${foodNumber}.png`;
+
+        if (!bonus.includes(foodNumber)) {
+            bonus.push(foodNumber);
+        }
 
         // Assignez l'image de la nourriture à l'objet food
-        food = { x: foodX, y: foodY, img: foodImg };
+        food = { x: foodX, y: foodY, img: dragonBallImg.src };
+
+        BonusConplete = () => {
+            if (bonus.length === 7) {
+                score += 10;
+                bonus = [];
+            }
+        };
+        BonusConplete();
+
+        console.log(bonus);
     };
     let generateWall = () => {
         let wallX, wallY;
@@ -206,6 +203,7 @@ const startGame = () => {
         walls.push({ x: wallX, y: wallY });
     };
 
+
     game = setInterval(draw, 100);
 
     function rejouer() {
@@ -218,8 +216,11 @@ const startGame = () => {
         direction = undefined;
         walls = [];
         clearInterval(game);
+        bonus = [];
         game = setInterval(draw, 100);
     }
 
     document.getElementById("rejouer").addEventListener("click", rejouer);
 };
+
+startGame();
